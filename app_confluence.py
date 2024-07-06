@@ -13,7 +13,7 @@ username = os.getenv("username")
 password = os.getenv("password")
 
 # Set your Confluence details here
-space_key = 'SUP'  # replace with your info
+space_key = 'ATKB'  # replace with your info
 
 # Function to fetch pages from Confluence
 def fetch_pages(start, limit):
@@ -28,8 +28,9 @@ def fetch_pages(start, limit):
 # Function to make an API call
 def api_call(url):
     try:
-        response = requests.get(url, auth=HTTPBasicAuth(username, password))
-
+        # response = requests.get(url, auth=HTTPBasicAuth(username, password))
+        response = requests.get(url)
+        
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 404:
