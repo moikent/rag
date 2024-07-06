@@ -34,7 +34,7 @@ def create_embeddings(text, model_emb):
 
 # create prompt for openai
 def create_prompt(query, res):
-    contexts = [ x['metadata']['text'] for x in res['matches']]
+    contexts = [ x['text'] for x in res['metadatas'][0]]
     prompt_start = ("Answer the question based on the context and sentiment of the question.\n\n" + "Context:\n") # also, do not discuss any Personally Identifiable Information.
     prompt_end = (f"\n\nQuestion: {query}\nAnswer:")
     prompt = (prompt_start + "\n\n---\n\n".join(contexts) + prompt_end)

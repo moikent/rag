@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from tqdm.auto import tqdm
-from utils.openai_logic import create_embeddings
+from utils.hf_embeddings import create_embeddings
 import os, sys
 
 # Function to get dataset

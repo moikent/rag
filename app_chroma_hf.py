@@ -2,7 +2,8 @@ import os
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
 import gradio as gr
-from utils.pinecone_logic import delete_pinecone_index, get_pinecone_index, upsert_data
+# from utils.pinecone_logic import delete_pinecone_index, get_pinecone_index, upsert_data
+from utils.chroma_logic import get_pinecone_index, upsert_data
 from utils.data_prep import import_csv, clean_data_pinecone_schema, generate_embeddings_and_add_to_df
 from utils.openai_logic import create_prompt, add_prompt_messages, get_chat_completion_messages, create_system_prompt
 import sys
@@ -14,9 +15,9 @@ load_dotenv(find_dotenv())
 # Function to extract information
 def extract_info(data):
     extracted_info = []
-    for match in data['matches']:
-        source = match['metadata']['source']
-        score = match['score']
+    for match in data['metadatas'][0]:
+        source = match['source']
+        score = 0
         extracted_info.append((source, score))
     return extracted_info
 
@@ -49,7 +50,10 @@ def main(query):
         upsert_data(index, df)
 
     embed = get_embeddings(query, model_for_embedding)
-    res = index.query(vector=embed, top_k=3, include_metadata=True)
+    res = index.query(query_embeddings=embed, n_results=3)
+    print('moiw res')
+    from pprint import pprint
+    pprint(res)
     
     # create system prompt and user prompt for openai chat completion
     messages = []
@@ -59,6 +63,8 @@ def main(query):
     messages = add_prompt_messages("user", prompt , messages)
     response = get_chat_completion_messages(messages, model_for_openai_chat) 
     print('-' * 80)
+    print("moiw res is")
+    pprint(res)
     extracted_info = extract_info(res)
     validated_info = []
     for info in extracted_info:
@@ -75,7 +81,8 @@ def main(query):
 if __name__ == "__main__":
     # main("What is your contact information?")
     # main("How to setup watermark faculty profile")
-
+    # main("who is Rob Robertson ")
+    # main("How to program a digital TV to receive all University channels")
     #create Gradio interface for the chatbot
     gr.close_all()
     demo = gr.Interface(fn=main,
